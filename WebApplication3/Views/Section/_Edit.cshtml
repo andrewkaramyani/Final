@@ -1,0 +1,58 @@
+﻿@model AspNet_Core.Models.Section
+@{
+    ViewBag.Title = "Create Section";
+}
+<form id="EditSection" enctype="multipart/form-data" asp-controller="Section" asp-action="Edit" method="post" class="mt-3">
+    <input asp-for="@Model.Id" hidden />
+    <div class="form-group row">
+        <label asp-for="@Model.Name" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="@Model.Name" class="form-control" placeholder="Name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label class="col-form-label col-sm-2">Department</label>
+        <div class="col-sm-10">
+            <select asp-for="@Model.DepartmentId" id="DepartmentDropdown" class="form-control" data-val-required="Required DepartmentId"
+                    asp-items="@(new SelectList(ViewBag.Department,"Code","Name"))">
+                <option disabled selected hidden>SelectOne</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-10">
+            <button id="btnSubmit" class="btn btn-primary" type="submit">Update</button>
+        </div>
+    </div>
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+</form>
+
+
+<script>
+    $('#EditSection').validate({
+        errorPlacement: function (error, element) { },
+        submitHandler: function (form) {
+            if ($("#EditSection").valid()) {
+                $('.validation-summary-errors').find('ul').find('li').remove();
+                $('#btnSubmit').prop('disabled', true);
+                var formData = new FormData(form);
+                $.ajax({
+                    url: form.action,
+                    type: form.method,
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        $('#SectionUpdateModal').modal('hide');
+                        $('.modal-backdrop').removeClass('show');
+                        $('#Sections').html(response);
+                    }
+                });
+            }
+
+        }
+    });
+
+</script>

@@ -1,0 +1,34 @@
+﻿@model IEnumerable<AspNet_Core.Models.SubSection>
+
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered verticle-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var SubSection in Model)
+                        {
+                            <tr>
+                                <td>@SubSection.ID</td>
+                                <td>@SubSection.Name</td>
+                                <td>
+                                    <span>
+                                        <a SubSectionid="@SubSection.ID"  onclick="EditSubSection($(this).attr('SubSectionid'), '@Url.Action("Edit", "SubSection")')"
+                                           data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
+                                        <a  SubSectionid="@SubSection.ID" onclick="DeleteSubSection($(this).attr('SubSectionid'),'@Url.Action("Delete", "SubSection")')"
+                                           data-toggle="tooltip" data-placement="top" title="Close"><i class="fa fa-close color-danger"></i></a>
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>

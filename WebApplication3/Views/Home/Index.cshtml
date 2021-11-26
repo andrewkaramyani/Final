@@ -1,0 +1,166 @@
+﻿@model IEnumerable<AspNet_Core.Models.Employee>
+@{
+    ViewBag.Title = "Employee List";
+}
+<div id="EmployeePage">
+    <div class="col-sm-12 col-lg-2 pt-1">
+        <input type="button" value="Add Employee" onclick="AddNewEmployee('@Url.Action("Create", "Home")')" class="btn btn-info">
+    </div>
+    <div class="row FiltersSelect">
+        <div class="col-lg col-sm-6 col-md-4 pr-lg-2">
+            <label class="col-form-label">Name</label>
+            <input class="form-control Filter FilterName" placeholder="Name" onchange="Filter()"/>
+        </div>
+        <div class="col-lg col-sm-6 col-md-4 pr-lg-2">
+            <label class="col-form-label">Department</label>
+            <select id="DepartmentDropdownFilter" name="Department" class="form-control floatingSelect"
+                    asp-items="@(new SelectList(ViewBag.Department,"Code","Name"))">
+                <option selected>All</option>
+            </select>
+        </div>
+        <div class="col-lg col-sm-6 col-md-4 pr-lg-2">
+            <label class="col-form-label">Section</label>
+            <select id="SectionDropdownFilter" name="Section" class="form-control floatingSelect">
+                <option selected>All</option>
+            </select>
+        </div>
+        <div class="col-lg col-sm-6 col-md-4 pr-lg-2">
+            <label class="col-form-label">SubSection</label>
+            <select id="SubsectionDropdownFilter" name="SubSection" class="form-control floatingSelect" onchange="Filter()">
+                <option selected>All</option>
+            </select>
+        </div>
+    </div>
+
+
+    <div id="Employees">
+        @await Html.PartialAsync("_Employees", Model)
+    </div>
+
+    <button id="btnEmployeeModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#EmployeeModal" hidden></button>
+    <div class="modal fade" id="EmployeeModal" tabindex="-1" role="dialog" aria-labelledby="EmployeeModalLabel" aria-hidden="true" data-keyboard="false">
+        <div class="modal-dialog  modal-xl" role="document">
+            <div class="modal-content" style="min-height:90vh">
+                <div class="modal-header">
+                    <div style="font-size:20px;">Employee Info</div>
+                    <button type="button" class="close btn btn-light" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="EmployeeModalBody">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+@section scripts {
+    <script>
+    //Bind State dropdownlist
+    $("#DepartmentDropdownFilter").change(function () {
+            var DepartmentId = $(this).val();
+            $.getJSON("/Section/GetLookUps", { id: DepartmentId }, function (data) {
+                var item = "";
+                $("#SectionDropdownFilter").find('option').not(':first').remove();
+                $("#SubsectionDropdownFilter").find('option').not(':first').remove();
+                item += '<option value="">Select State</option>'
+                $.each(data, function (i, setion) {
+                    item += '<option value="' + setion.code + '">' + setion.name + '</option>'
+                });
+                $("#SectionDropdownFilter").html(item);
+                Filter();
+            });
+        });
+
+    $("#SectionDropdownFilter").change(function () {
+            var sectionid = $(this).val();
+            $.getJSON("/SubSection/GetLookUps", { id: sectionid }, function (data) {
+                var item = "";
+                $("#SubsectionDropdownFilter").find('option').not(':first').remove();
+                item += '<option value="">Select State</option>'
+                $.each(data, function (i, Subsetion) {
+                    item += '<option value="' + Subsetion.code + '">' + Subsetion.name + '</option>'
+                });
+                $("#SubsectionDropdownFilter").html(item);
+                Filter();
+            });
+        });
+
+
+
+
+    function Filter() {
+    CallFilters();
+    }
+
+function CallFilters() {
+    var param = GetFilters();
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("EmployeeFilter", "Home")',
+        data: { employeeFilters: param },
+        dataType: 'html',
+        success: function (data) {
+            $("#EmployeePage #Employees").html(data);
+        }
+    });
+}
+
+
+function GetFilters() {
+    var filters = $("#EmployeePage .floatingSelect");
+    var param = new Object();
+    $(filters).each(function (key) {
+        var filterName = $(filters[key]).attr('name');
+        var filterValue = $(filters[key]).val() == "All" ? -1 : $(filters[key]).val();
+        param[filterName] = filterValue;
+    });
+    param["EmployeeName"] = $('#EmployeePage .FilterName').val();
+
+    return param
+    }
+
+    function AddNewEmployee(url) {
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: 'html',
+            success: function (data) {
+                $('#EmployeePage #EmployeeModalBody').html(data);
+                $('#EmployeePage #btnEmployeeModal').click();
+                $("form").removeData("validator");
+                $("form").removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse($('form'));
+            }
+        });
+    }
+    function EditEmployee(EmployeeId, url) {
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "html",
+            data: { id: EmployeeId },
+            success: function (data) {
+                //$('#EmployeeModalLabel').html("Edit Employee");
+                $('#EmployeePage #EmployeeModalBody').html(data);
+                $('#EmployeePage #btnEmployeeModal').click();
+                $("#EmployeePage form").removeData("validator");
+                $("#EmployeePage form").removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse("#EmployeesPage form");
+            }
+        });
+    }
+    function DeleteEmployee(EmployeeId, url) {
+        $.ajax({
+            type: "Delete",
+            url: url,
+            data: { id: EmployeeId },
+            dataType: 'html',
+            success: function (data) {
+                $('#EmployeePage #Employees').html(data);
+            }
+        });
+    }
+
+    </script>
+}

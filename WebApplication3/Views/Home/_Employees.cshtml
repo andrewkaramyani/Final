@@ -1,0 +1,39 @@
+﻿@model IEnumerable<AspNet_Core.Models.Employee>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered verticle-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Sub Section</th>
+                            <th scope="col">Section</th>
+                            <th scope="col">Deaprtment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var employee in Model)
+                        {
+                            <tr>
+                                <td>@employee.ID</td>
+                                <td>@employee.Name</td>
+                                <td>@employee.SubSection.Name</td>
+                                <td>@employee.SubSection.Section.Name</td>
+                                <td>@employee.SubSection.Section.Department.Name</td>
+                                <td>
+                                    <span>
+                                        <a Employeeid="@employee.ID" onclick="EditEmployee($(this).attr('Employeeid'), '@Url.Action("Edit", "Home")')"
+                                           data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
+                                        <a Employeeid="@employee.ID" onclick="DeleteEmployee($(this).attr('Employeeid'),'@Url.Action("Delete", "Home")')"
+                                           data-toggle="tooltip" data-placement="top" title="Close"><i class="fa fa-close color-danger"></i></a>
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>

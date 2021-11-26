@@ -1,0 +1,80 @@
+﻿@model AspNet_Core.Models.SubSection
+@{
+    ViewBag.Title = "Create SubSection";
+}
+<form id="CreateSubSection" enctype="multipart/form-data" asp-controller="SubSection" asp-action="Create" method="post" class="mt-3">
+    <div class="form-group row">
+        <label asp-for="@Model.Name" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="@Model.Name" class="form-control" placeholder="Name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Department</label>
+        <div class="col-sm-10">
+            <select id="DepartmentDropdown" class="form-control" data-val-required="Required DepartmentId"
+                    asp-items="@(new SelectList(ViewBag.Department,"Code","Name"))">
+                <option disabled selected hidden>SelectOne</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Section</label>
+        <div class="col-sm-10">
+            <select asp-for="@Model.SectionId" id="sectionDropdown" class="form-control" data-val-required="Required SectionId">
+                <option disabled selected hidden>SelectOne</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-10">
+            <button id="btnSubmit" class="btn btn-primary" type="submit">Create</button>
+        </div>
+    </div>
+    <div asp-validation-summary="All" class="text-danger"></div>
+</form>
+
+
+<script>
+    $('#CreateSubSection').validate({
+        errorPlacement: function (error, element) { },
+        submitHandler: function (form) {
+            if ($("#CreateSubSection").valid()) {
+                $('.validation-summary-errors').find('ul').find('li').remove();
+                $('#btnSubmit').prop('disabled', true);
+                var formData = new FormData(form);
+                $.ajax({
+                    url: form.action,
+                    type: form.method,
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        $('#SubSectionModal').modal('hide');
+                        $('.modal-backdrop').removeClass('show');
+                        $('#SubSections').html(response);
+                    }
+                });
+            }
+
+        }
+    });
+
+    //Bind State dropdownlist
+    $("#DepartmentDropdown").change(function () {
+        var DepartmentId = $(this).val();
+        $.getJSON("/Section/GetLookUps", { id: DepartmentId }, function (data) {
+            var item = "";
+            $("#sectionDropdown").find('option').not(':first').remove();
+            item += '<option value="">Select Section</option>'
+            $.each(data, function (i, setion) {
+                item += '<option value="' + setion.code + '">' + setion.name + '</option>'
+            });
+            $("#sectionDropdown").html(item);
+        });
+    });
+</script>

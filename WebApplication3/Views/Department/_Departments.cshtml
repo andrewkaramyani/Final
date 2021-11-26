@@ -1,0 +1,35 @@
+﻿@model IEnumerable<AspNet_Core.Models.Department>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered verticle-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var Department in Model)
+                        {
+                            <tr>
+                                <td>@Department.ID</td>
+                                <td>@Department.Name</td>
+                                <td>
+                                    <span>
+                                        <a Departmentid="@Department.ID" onclick="EditDepartment($(this).attr('Departmentid'), '@Url.Action("Edit", "Department")')"
+                                           data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-pencil color-muted m-r-5"></i> </a>
+                                        <a Departmentid="@Department.ID" onclick="DeleteDepartment($(this).attr('Departmentid'),'@Url.Action("Delete", "Department")')"
+                                           data-toggle="tooltip" data-placement="top" title="Close"><i class="fa fa-close color-danger"></i></a>
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+

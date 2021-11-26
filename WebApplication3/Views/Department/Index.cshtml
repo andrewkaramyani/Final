@@ -1,0 +1,93 @@
+﻿@model IEnumerable<AspNet_Core.Models.Department>
+@{
+    ViewBag.Title = "Department List";
+}
+
+    <div id="DepartmentPage">
+        <div class="col-sm-12 col-lg-2 p-1">
+            <input type="button" value="Add Department" onclick="AddNewDepartment('@Url.Action("Create", "Department")')" class="btn btn-info">
+        </div>
+
+        <div id="Departments">
+            @await Html.PartialAsync("_Departments", Model)
+        </div>
+
+        <button id="btnDepartmentModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#DepartmentModal" hidden></button>
+        <div class="modal fade" id="DepartmentModal" tabindex="-1" role="dialog" aria-labelledby="DepartmentModalLabel" aria-hidden="true" data-keyboard="false">
+            <div class="modal-dialog  modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div style="font-size:20px;">Department Info</div>
+                        <button type="button" class="close btn btn-light" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="DepartmentModalBody">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button id="btnUpdateDepartmentModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#DepartmentUpdateModal" hidden></button>
+        <div class="modal fade" id="DepartmentUpdateModal" tabindex="-1" role="dialog" aria-labelledby="DepartmentUpdateModallLabel" aria-hidden="true" data-keyboard="false">
+            <div class="modal-dialog  modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div style="font-size:20px;">Department Info</div>
+                        <button type="button" class="close btn btn-light" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="DepartmentUpdateModalBody">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+<script>
+    function AddNewDepartment(url) {
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: 'html',
+            success: function (data) {
+                $('#DepartmentPage #DepartmentModalBody').html(data);
+                $('#DepartmentPage #btnDepartmentModal').click();
+                $("#DepartmentPage form").removeData("validator");
+                $("#DepartmentPage form").removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse("form");
+            }
+        });
+    }
+    function EditDepartment(DepartmentId, url) {
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "html",
+            data: { id: DepartmentId },
+            success: function (data) {
+                //$('#DepartmentModalLabel').html("Edit Department");
+                $('#DepartmentPage #DepartmentUpdateModalBody').html(data);
+                $('#DepartmentPage #btnUpdateDepartmentModal').click();
+                $("#DepartmentPage form").removeData("validator");
+                $("#DepartmentPage form").removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse("form");
+            }
+        });
+    }
+    function DeleteDepartment(DepartmentId, url) {
+        $.ajax({
+            type: "Get",
+            url: url,
+            data: { id: DepartmentId },
+            dataType: 'html',
+            success: function (data) {
+                $('#DepartmentPage #Departments').html(data);
+            }
+        });
+    }
+
+</script>

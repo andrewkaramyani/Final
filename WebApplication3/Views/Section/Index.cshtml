@@ -1,0 +1,93 @@
+﻿@model IEnumerable<AspNet_Core.Models.Section>
+@{
+    ViewBag.Title = "Section List";
+}
+
+    <div id="SectionPage">
+        <div class="col-sm-12 col-lg-2 p-1">
+            <input type="button" value="Add Section" onclick="AddNewSection('@Url.Action("Create", "Section")')" class="btn btn-info">
+        </div>
+
+        <div id="Sections">
+            @await Html.PartialAsync("_Sections", Model)
+        </div>
+
+        <button id="btnSectionModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#SectionModal" hidden></button>
+        <div class="modal fade" id="SectionModal" tabindex="-1" role="dialog" aria-labelledby="SectionModalLabel" aria-hidden="true" data-keyboard="false">
+            <div class="modal-dialog  modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div style="font-size:20px;">Section Info</div>
+                        <button type="button" class="close btn btn-light" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="SectionModalBody">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button id="btnUpdateSectionModal" type="button" class="btn btn-primary" data-toggle="modal" data-target="#SectionUpdateModal" hidden></button>
+        <div class="modal fade" id="SectionUpdateModal" tabindex="-1" role="dialog" aria-labelledby="SectionUpdateModallLabel" aria-hidden="true" data-keyboard="false">
+            <div class="modal-dialog  modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div style="font-size:20px;">Section Info</div>
+                        <button type="button" class="close btn btn-light" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="SectionUpdateModalBody">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+<script>
+    function AddNewSection(url) {
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: 'html',
+            success: function (data) {
+                $('#SectionPage #SectionModalBody').html(data);
+                $('#SectionPage #btnSectionModal').click();
+                $("#SectionPage form").removeData("validator");
+                $("#SectionPage form").removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse("form");
+            }
+        });
+    }
+    function EditSection(SectionId, url) {
+        $.ajax({
+            type: "GET",
+            url: url,
+            dataType: "html",
+            data: { id: SectionId },
+            success: function (data) {
+                //$('#SectionModalLabel').html("Edit Section");
+                $('#SectionPage #SectionUpdateModalBody').html(data);
+                $('#SectionPage #btnUpdateSectionModal').click();
+                $("#SectionPage form").removeData("validator");
+                $("#SectionPage form").removeData("unobtrusiveValidation");
+                $.validator.unobtrusive.parse("form");
+            }
+        });
+    }
+    function DeleteSection(SectionId, url) {
+        $.ajax({
+            type: "Get",
+            url: url,
+            data: { id: SectionId },
+            dataType: 'html',
+            success: function (data) {
+                $('#SectionPage #Sections').html(data);
+            }
+        });
+    }
+
+</script>
